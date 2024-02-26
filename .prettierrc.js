@@ -1,11 +1,8 @@
-export default {
-    "trailingComma": "es5",
-    "tabWidth": 4,
-    "semi": true,
-    "singleQuote": true,
-    "bracketSameLine": true,
-    "bracketSpacing": true,
-    "useTabs": false,
-    "proseWrap": "preserve",
-    "printWidth": 120
-}
+module.exports =  {
+  semi: true,
+  trailingComma: 'all',
+  singleQuote: true,
+  printWidth: 150,
+  tabWidth: 2,
+};
+  
