@@ -1,9 +1,19 @@
-const addition = (a: number, b: number): number => {
-  return a + b;
-};
+import express, { Express, Request, Response } from 'express';
+import dotenv from 'dotenv';
 
-const number1: number = 5;
-const number2: number = 10;
-const result: number = addition(number1, number2);
+import * as logger from './utils/logger';
 
-console.log('The result is %d', result);
+dotenv.config();
+
+const app: Express = express();
+const port = process.env.PORT || 3000;
+
+app.get('/', (req: Request, res: Response) => {
+  res.send('Success');
+});
+
+app.listen(port, () => {
+  console.log(`TalanginDong-API server is running at http://localhost:${port}`);
+});
+
+logger.info('test');
