@@ -1,0 +1,1190 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "TalanginDong API Documentation",
+        "version": "1.0.0",
+        "description": "Contact: icarusphantom (discord)\n# Introduction\nWelcome to the IcarusPhantom API Documentation page!<br>Here you can find information on all the endpoints we have, and how to use them.\n\nThis API is mainly used for ChatTriggers <a href=\"https://www.chattriggers.com/modules/v/SBECommands\" target=\"_blank\">SBECommands</a> module.\n\nThe main API URL is `https://api.icarusphantom.dev/`\n## Limits\nSome API endpoints are limited to a maximum amount of requests per 1 minute intervals. If you want increased rate limit, please contact the developer.\n\nEndpoints will respond with headers to assist with managing the rate limit:\n- 'RateLimit-Limit' - The limit of requests per minute.\n- 'RateLimit-Remaining' - The remaining amount of requests allowed for the current minute.\n- 'RateLimit-Reset' - The amount of seconds until the next minute and the reset of the API usages.",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://api.icarusphantom.dev/"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Hypixel Raw Data",
+            "description": "Get direct raw data from hypixel."
+        },
+        {
+            "name": "SBECommands",
+            "description": "Get specific data that will be used for ChatTriggers Module SBECommands."
+        },
+        {
+            "name": "Miscs",
+            "description": "Get some useful misc data or informations."
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "ApiKey": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "API-Key",
+                "description": "Obtained via the [Hypixel Developer Dashboard](https://developer.hypixel.net) when creating an application. You can also request higher limits for production applications in this dashboard."
+            }
+        },
+        "responses": {
+            "DataMissing": {
+                "description": "Some data is missing, this is usually a field.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "cause": {
+                                    "type": "string",
+                                    "example": "Missing one or more fields [...]"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "InvalidKey": {
+                "description": "Access is forbidden, usually due to an invalid API key being used.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "cause": {
+                                    "type": "string",
+                                    "example": "Invalid API key"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "RateLimitedHypixel": {
+                "description": "A request limit has been reached, usually this is due to the limit on the key being reached but can also be triggered by a global throttle.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "cause": {
+                                    "type": "string",
+                                    "example": "Key throttle"
+                                },
+                                "throttle": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "global": {
+                                    "type": "boolean",
+                                    "description": "When this boolean exists and is true, the throttle occurring is a global throttle applied to all users",
+                                    "example": true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "InvalidPage": {
+                "description": "The page provided is invalid.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "cause": {
+                                    "type": "string",
+                                    "example": "Invalid page"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "MissingPage": {
+                "description": "The page provided does not exist.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "cause": {
+                                    "type": "string",
+                                    "example": "Page not found"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "MalformedData": {
+                "description": "Some data provided is invalid.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "cause": {
+                                    "type": "string",
+                                    "example": "Malformed UUID"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "NotPopulated": {
+                "description": "The data is not yet populated and should be available shortly",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "cause": {
+                                    "type": "string",
+                                    "example": "Leaderboard data has not yet been populated"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "RateLimited": {
+                "description": "A request limit has been reached, usually this is due to the limit being reached but can also be triggered by a global throttle.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "example": 429
+                                },
+                                "reason": {
+                                    "type": "string",
+                                    "example": "You get rate limited"
+                                },
+                                "code": {
+                                    "type": "string",
+                                    "example": "RATE_LIMITED"
+                                },
+                                "global": {
+                                    "type": "boolean",
+                                    "description": "When this boolean exists and is true, the throttle occurring is a global throttle applied to all users",
+                                    "example": true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "NotFound": {
+                "description": "The requested data was not found.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "example": 404
+                                },
+                                "reason": {
+                                    "type": "string",
+                                    "example": "Data not found"
+                                },
+                                "code": {
+                                    "type": "string",
+                                    "example": "NOT_FOUND"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "schemas": {
+            "Booster": {
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "format": "objectid"
+                    },
+                    "purchaserUuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "ad8fefaa8351454bb739a4eaa872173f"
+                    },
+                    "amount": {
+                        "type": "number"
+                    },
+                    "originalLength": {
+                        "type": "integer"
+                    },
+                    "length": {
+                        "type": "integer"
+                    },
+                    "gameType": {
+                        "type": "integer"
+                    },
+                    "dateActivated": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "ActiveBooster": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/Booster"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "stacked": {
+                                "type": "array",
+                                "nullable": true,
+                                "items": {
+                                    "type": "string",
+                                    "description": "UUID of the player in a dashed format",
+                                    "format": "uuid",
+                                    "example": "ad8fefaa-8351-454b-b739-a4eaa872173f"
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            "QueuedBooster": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/Booster"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "stacked": {
+                                "type": "boolean",
+                                "nullable": true
+                            }
+                        }
+                    }
+                ]
+            },
+            "SkyBlockAuction": {
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "format": "objectid"
+                    },
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "auctioneer": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "profile_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "coop": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    "start": {
+                        "type": "number",
+                        "format": "int64"
+                    },
+                    "end": {
+                        "type": "number",
+                        "format": "int64"
+                    },
+                    "item_name": {
+                        "type": "string"
+                    },
+                    "item_lore": {
+                        "type": "string"
+                    },
+                    "extra": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "string"
+                    },
+                    "tier": {
+                        "type": "string"
+                    },
+                    "starting_bid": {
+                        "type": "number"
+                    },
+                    "item_bytes": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "number"
+                            },
+                            "data": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "claimed": {
+                        "type": "boolean"
+                    },
+                    "claimed_bidders": {
+                        "type": "array"
+                    },
+                    "highest_bid_amount": {
+                        "type": "number"
+                    },
+                    "bids": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "auction_id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "bidder": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "profile_id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "amount": {
+                                    "type": "number"
+                                },
+                                "timestamp": {
+                                    "type": "number",
+                                    "format": "int64"
+                                }
+                            }
+                        }
+                    }
+                },
+                "example": {
+                    "_id": "5dcdaf2244f4f4f350c02bf3",
+                    "uuid": "409a1e0f261a49849493278d6cd9305a",
+                    "auctioneer": "347ef6c1daac45ed9d1fa02818cf0fb6",
+                    "profile_id": "347ef6c1daac45ed9d1fa02818cf0fb6",
+                    "coop": [
+                        "347ef6c1daac45ed9d1fa02818cf0fb6"
+                    ],
+                    "start": 1573760802637,
+                    "end": 1573761102637,
+                    "item_name": "Azure Bluet",
+                    "item_lore": "§f§lCOMMON",
+                    "extra": "Azure Bluet Red Rose",
+                    "category": "blocks",
+                    "tier": "COMMON",
+                    "starting_bid": 1,
+                    "item_bytes": {
+                        "type": 0,
+                        "data": "H4sIAAAAAAAAAB2NQQqCQBhGv1ErHaKu0KoLtGtnarRIhTpA/OGfDIwZ4wxUF/IeHiyyto/3eBKIIJQEIDx4qsJaYJK07m6FhG+p9hEdVMV7TXU3Wh+JWaW6h6ZXhODYGg5/LeZDfxt6nZR5XhYhgoIaxmKE8dsZXu20YwuJZfa0hmJrjbo6y134f8pTll5O5TnbbgAP05Qaqhk+8AVIrd2eoAAAAA=="
+                    },
+                    "claimed": true,
+                    "claimed_bidders": [],
+                    "highest_bid_amount": 7607533,
+                    "bids": [
+                        {
+                            "auction_id": "409a1e0f261a49849493278d6cd9305a",
+                            "bidder": "99748e629dee463892f68abf3a780094",
+                            "profile_id": "99748e629dee463892f68abf3a780094",
+                            "amount": 7607533,
+                            "timestamp": 1573760824844
+                        }
+                    ]
+                }
+            },
+            "SkyBlockProfile": {
+                "properties": {
+                    "profile_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "members": {
+                        "description": "A map of member UUIDs to member profiles objects",
+                        "type": "object",
+                        "properties": {
+                            "player_id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "deletion_notice": {
+                                "description": "If this field exists, the member profile is marked as deleted",
+                                "nullable": true,
+                                "type": "object",
+                                "properties": {
+                                    "timestamp": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "cute_name": {
+                        "description": "The cute name of the profile, only provided on the profiles endpoint",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "selected": {
+                        "description": "Whether or not this is the currently selected profile, only provided on the profiles endpoint",
+                        "nullable": true,
+                        "type": "boolean"
+                    },
+                    "community_upgrades": {
+                        "nullable": true,
+                        "type": "object"
+                    },
+                    "banking": {
+                        "description": "Information about the bank account for this profile, only present if the API banking setting is enabled",
+                        "nullable": true,
+                        "type": "object",
+                        "properties": {
+                            "balance": {
+                                "type": "number",
+                                "format": "double"
+                            },
+                            "transactions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "timestamp": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "action": {
+                                            "type": "string",
+                                            "enum": [
+                                                "DEPOSIT",
+                                                "WITHDRAW"
+                                            ]
+                                        },
+                                        "initiator_name": {
+                                            "type": "string"
+                                        },
+                                        "amount": {
+                                            "type": "number",
+                                            "format": "double"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "game_mode": {
+                        "description": "The SkyBlock game mode of the profile, not present if normal mode",
+                        "nullable": true,
+                        "type": "string",
+                        "enum": [
+                            "ironman",
+                            "island",
+                            "bingo"
+                        ]
+                    }
+                }
+            },
+            "SkyBlockItem": {
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier for this item",
+                        "type": "string"
+                    },
+                    "material": {
+                        "description": "The Bukkit material enum value for the item",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "The name of the item",
+                        "type": "string"
+                    },
+                    "tier": {
+                        "description": "The rarity tier of the item",
+                        "type": "string",
+                        "enum": [
+                            "COMMON",
+                            "UNCOMMON",
+                            "RARE",
+                            "EPIC",
+                            "LEGENDARY",
+                            "MYTHIC",
+                            "SUPREME",
+                            "SPECIAL",
+                            "VERY_SPECIAL"
+                        ]
+                    },
+                    "color": {
+                        "description": "The color metadata to be applied to an item, usually leather armor pieces",
+                        "pattern": "^(?:(?:^|,\\s*)([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}$",
+                        "type": "string"
+                    },
+                    "skin": {
+                        "description": "The skin value for a skull based item",
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "material": "LEATHER_CHESTPLATE",
+                    "color": "255,215,0",
+                    "name": "Farm Armor Chestplate",
+                    "category": "CHESTPLATE",
+                    "tier": "RARE",
+                    "stats": {
+                        "DEFENSE": 75,
+                        "HEALTH": 20
+                    },
+                    "npc_sell_price": 5200,
+                    "id": "FARM_ARMOR_CHESTPLATE"
+                }
+            },
+            "SkyBlockMuseum": {
+                "properties": {
+                    "value": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "appraisal": {
+                        "type": "boolean"
+                    },
+                    "items": {
+                        "type": "object"
+                    },
+                    "special": {
+                        "type": "array",
+                        "properties": {
+                            "donated_time": {
+                                "type": "integer",
+                                "format": "int64"
+                            },
+                            "items": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            },
+            "Game": {
+                "description": "Information about a specific game. When a field is not present you should fallback to the provided default if there is one, required fields will always exist.",
+                "required": [
+                    "id",
+                    "name",
+                    "databaseName"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "The backend ID of the game.",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The display name of the game.",
+                        "example": "Bed Wars"
+                    },
+                    "databaseName": {
+                        "type": "string",
+                        "description": "The key used for database storage, such as for stats.",
+                        "example": "Bedwars"
+                    },
+                    "modeNames": {
+                        "type": "object",
+                        "description": "A map of mode key to display name",
+                        "example": {
+                            "solo_normal": "Solo",
+                            "team_normal": "Doubles"
+                        }
+                    },
+                    "retired": {
+                        "type": "boolean",
+                        "description": "True if the game is retired and no longer playable.",
+                        "default": false
+                    },
+                    "legacy": {
+                        "type": "boolean",
+                        "description": "True if the game is legacy and part of the Classic Lobby.",
+                        "default": false
+                    }
+                },
+                "example": {
+                    "id": 58,
+                    "name": "Bed Wars",
+                    "databaseName": "Bedwars",
+                    "modeNames": {
+                        "BEDWARS_TWO_FOUR": "4v4",
+                        "BEDWARS_EIGHT_ONE": "Solo"
+                    }
+                }
+            },
+            "SkyBlockFireSale": {
+                "properties": {
+                    "item_id": {
+                        "description": "The SkyBlock item ID for this sale",
+                        "type": "string"
+                    },
+                    "start": {
+                        "description": "The start time in unix milliseconds for the sale",
+                        "type": "number"
+                    },
+                    "end": {
+                        "description": "The end time in unix milliseconds for the sale",
+                        "type": "number"
+                    },
+                    "amount": {
+                        "description": "The amount of items available for this sale",
+                        "type": "integer"
+                    },
+                    "price": {
+                        "description": "The price in Gems for this sale",
+                        "type": "integer"
+                    }
+                }
+            }
+        }
+    },
+    "paths": {
+        "/v1/hypixel/player": {
+            "get": {
+                "tags": [
+                    "Hypixel Raw Data"
+                ],
+                "summary": "Get raw data from hypixel /player endpoint",
+                "operationId": "getRawHypixelPlayer",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "query",
+                        "description": "UUID of the player",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "player": {
+                                            "type": "object",
+                                            "properties": {
+                                                "uuid": {
+                                                    "type": "string",
+                                                    "example": "3fa85f6457174562b3fc2c963f66afa6"
+                                                },
+                                                "displayname": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "rank": {
+                                                    "type": "string",
+                                                    "nullable": true,
+                                                    "enum": [
+                                                        "ADMIN",
+                                                        "MODERATOR",
+                                                        "HELPER",
+                                                        "NORMAL"
+                                                    ]
+                                                },
+                                                "packageRank": {
+                                                    "type": "string",
+                                                    "nullable": true,
+                                                    "enum": [
+                                                        "MVP_PLUS",
+                                                        "MVP",
+                                                        "VIP_PLUS",
+                                                        "VIP",
+                                                        "NONE"
+                                                    ]
+                                                },
+                                                "newPackageRank": {
+                                                    "type": "string",
+                                                    "nullable": true,
+                                                    "enum": [
+                                                        "MVP_PLUS",
+                                                        "MVP",
+                                                        "VIP_PLUS",
+                                                        "VIP",
+                                                        "NONE"
+                                                    ]
+                                                },
+                                                "monthlyPackageRank": {
+                                                    "type": "string",
+                                                    "nullable": true,
+                                                    "enum": [
+                                                        "SUPERSTAR",
+                                                        "NONE"
+                                                    ]
+                                                },
+                                                "firstLogin": {
+                                                    "type": "number",
+                                                    "nullable": true
+                                                },
+                                                "lastLogin": {
+                                                    "type": "number",
+                                                    "nullable": true
+                                                },
+                                                "lastLogout": {
+                                                    "type": "number",
+                                                    "nullable": true
+                                                },
+                                                "stats": {
+                                                    "type": "object",
+                                                    "nullable": true
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/DataMissing"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidKey"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimitedHypixel"
+                    }
+                }
+            }
+        },
+        "/v1/hypixel/guild": {
+            "get": {
+                "tags": [
+                    "Hypixel Raw Data"
+                ],
+                "summary": "Get raw data from hypixel /guild endpoint",
+                "operationId": "getRawHypixelGuild",
+                "parameters": [
+                    {
+                        "name": "player",
+                        "in": "query",
+                        "description": "UUID of the player",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "guild": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/DataMissing"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidKey"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimitedHypixel"
+                    }
+                }
+            }
+        },
+        "/v1/hypixel/sykblock/profiles": {
+            "get": {
+                "tags": [
+                    "Hypixel Raw Data"
+                ],
+                "summary": "Get raw data from hypixel /skyblock/profiles endpoint",
+                "operationId": "getRawHypixelSkyblockProfiles",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "query",
+                        "description": "UUID of the player",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "profiles": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SkyBlockProfile"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/DataMissing"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidKey"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/MalformedData"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimitedHypixel"
+                    }
+                }
+            }
+        },
+        "/v1/hypixel/sykblock/museum": {
+            "get": {
+                "tags": [
+                    "Hypixel Raw Data"
+                ],
+                "summary": "Get raw data from hypixel /skyblock/museum endpoint",
+                "operationId": "getRawHypixelSkyblockMuseum",
+                "parameters": [
+                    {
+                        "name": "profile",
+                        "in": "query",
+                        "description": "Profile ID selected profile of the player",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "profile": {
+                                            "$ref": "#/components/schemas/SkyBlockMuseum"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidKey"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/MalformedData"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimitedHypixel"
+                    }
+                }
+            }
+        },
+        "/v1/sbecommands/{command}/{uuid}": {
+            "get": {
+                "tags": [
+                    "SBECommands"
+                ],
+                "summary": "Get data for ChatTriggers SBECommands module",
+                "parameters": [
+                    {
+                        "name": "command",
+                        "in": "path",
+                        "description": "SBECommands's command name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "UUID or Username of minecraft player",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimited"
+                    }
+                }
+            }
+        },
+        "/v1/sbecommands/{command}/{uuid}/{profile}": {
+            "get": {
+                "tags": [
+                    "SBECommands"
+                ],
+                "summary": "Get data of specific profile for ChatTriggers SBECommands module",
+                "parameters": [
+                    {
+                        "name": "command",
+                        "in": "path",
+                        "description": "SBECommands's command name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "UUID or Username of minecraft player",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "profile",
+                        "in": "path",
+                        "description": "profile name of skyblock hypixel",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimited"
+                    }
+                }
+            }
+        },
+        "/v1/sbecommands/{command}": {
+            "post": {
+                "tags": [
+                    "SBECommands"
+                ],
+                "summary": "Get data of pcheck command for ChatTriggers SBECommands module",
+                "parameters": [
+                    {
+                        "name": "command",
+                        "in": "path",
+                        "description": "SBECommands's command name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "list of uuid or username that will checked",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "uuid": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "description": "UUID or username",
+                                            "format": "uuid"
+                                        },
+                                        "example": ["ad8fefaa-8351-454b-b739-a4eaa872173f", "IcarusPhantom"]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimited"
+                    }
+                }
+            }
+        },
+        "/v1/statistics": {
+            "get": {
+                "tags": [
+                    "Miscs"
+                ],
+                "summary": "Get statistics data of IcarusPhantom API",
+                "operationId": "getStatisticsData",
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "routes": {
+                                            "type": "object",
+                                            "properties": {
+                                                "endpoints1": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "endpoints2": {
+                                                    "type": "integer",
+                                                    "example": 150
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

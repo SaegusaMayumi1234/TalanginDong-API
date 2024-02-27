@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>API Documentation | TalanginDong API</title>
+        <meta name="description" content="An API Documentation for Mobile Application TalanginDong">
+        <meta property="og:title" content="TalanginDong API">
+        <meta property="og:description" content="An API Documentation for Mobile Application TalanginDong">
+    </head>
+
+    <body>
+        <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"> </script>
+        <redoc id="docs"></redoc>
+
+        <script>
+        Redoc.init('/resources/json/apiDocs.json', {
+            "expandResponses": "200,400"
+        }, document.getElementById('docs'))
+        </script>
+    </body>
+</html>
