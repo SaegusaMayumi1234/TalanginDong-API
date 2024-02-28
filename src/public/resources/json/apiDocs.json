@@ -3,7 +3,7 @@
     "info": {
         "title": "TalanginDong API Documentation",
         "version": "1.0.0",
-        "description": "Contact: icarusphantom (discord)\n# Introduction\nWelcome to the IcarusPhantom API Documentation page!<br>Here you can find information on all the endpoints we have, and how to use them.\n\nThis API is mainly used for ChatTriggers <a href=\"https://www.chattriggers.com/modules/v/SBECommands\" target=\"_blank\">SBECommands</a> module.\n\nThe main API URL is `https://api.icarusphantom.dev/`\n## Limits\nSome API endpoints are limited to a maximum amount of requests per 1 minute intervals. If you want increased rate limit, please contact the developer.\n\nEndpoints will respond with headers to assist with managing the rate limit:\n- 'RateLimit-Limit' - The limit of requests per minute.\n- 'RateLimit-Remaining' - The remaining amount of requests allowed for the current minute.\n- 'RateLimit-Reset' - The amount of seconds until the next minute and the reset of the API usages.",
+        "description": "Contact: icarusphantom (discord)\n# Introduction\nWelcome to the TalanginDong API Documentation page!<br>Here you can find information on all the endpoints we have, and how to use them.\n\nThe main API URL is `https://talangindong-api.icarusphantom.dev/`\n## Limits\nSome API endpoints are limited to a maximum amount of requests per 1 minute intervals. If you want increased rate limit, please contact the developer.\n\nEndpoints will respond with headers to assist with managing the rate limit:\n- 'RateLimit-Limit' - The limit of requests per minute.\n- 'RateLimit-Remaining' - The remaining amount of requests allowed for the current minute.\n- 'RateLimit-Reset' - The amount of seconds until the next minute and the reset of the API usages.",
         "license": {
             "name": "MIT",
             "url": "https://opensource.org/licenses/MIT"
@@ -11,32 +11,16 @@
     },
     "servers": [
         {
-            "url": "https://api.icarusphantom.dev/"
+            "url": "https://talangindong-api.icarusphantom.dev/"
         }
     ],
     "tags": [
         {
-            "name": "Hypixel Raw Data",
-            "description": "Get direct raw data from hypixel."
-        },
-        {
-            "name": "SBECommands",
-            "description": "Get specific data that will be used for ChatTriggers Module SBECommands."
-        },
-        {
-            "name": "Miscs",
-            "description": "Get some useful misc data or informations."
+            "name": "Authentication",
+            "description": "Authentication endpoint for TalanginDong mobile application"
         }
     ],
     "components": {
-        "securitySchemes": {
-            "ApiKey": {
-                "type": "apiKey",
-                "in": "header",
-                "name": "API-Key",
-                "description": "Obtained via the [Hypixel Developer Dashboard](https://developer.hypixel.net) when creating an application. You can also request higher limits for production applications in this dashboard."
-            }
-        },
         "responses": {
             "DataMissing": {
                 "description": "Some data is missing, this is usually a field.",
@@ -690,427 +674,26 @@
         }
     },
     "paths": {
-        "/v1/hypixel/player": {
-            "get": {
-                "tags": [
-                    "Hypixel Raw Data"
-                ],
-                "summary": "Get raw data from hypixel /player endpoint",
-                "operationId": "getRawHypixelPlayer",
-                "parameters": [
-                    {
-                        "name": "uuid",
-                        "in": "query",
-                        "description": "UUID of the player",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A successful response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "player": {
-                                            "type": "object",
-                                            "properties": {
-                                                "uuid": {
-                                                    "type": "string",
-                                                    "example": "3fa85f6457174562b3fc2c963f66afa6"
-                                                },
-                                                "displayname": {
-                                                    "type": "string",
-                                                    "nullable": true
-                                                },
-                                                "rank": {
-                                                    "type": "string",
-                                                    "nullable": true,
-                                                    "enum": [
-                                                        "ADMIN",
-                                                        "MODERATOR",
-                                                        "HELPER",
-                                                        "NORMAL"
-                                                    ]
-                                                },
-                                                "packageRank": {
-                                                    "type": "string",
-                                                    "nullable": true,
-                                                    "enum": [
-                                                        "MVP_PLUS",
-                                                        "MVP",
-                                                        "VIP_PLUS",
-                                                        "VIP",
-                                                        "NONE"
-                                                    ]
-                                                },
-                                                "newPackageRank": {
-                                                    "type": "string",
-                                                    "nullable": true,
-                                                    "enum": [
-                                                        "MVP_PLUS",
-                                                        "MVP",
-                                                        "VIP_PLUS",
-                                                        "VIP",
-                                                        "NONE"
-                                                    ]
-                                                },
-                                                "monthlyPackageRank": {
-                                                    "type": "string",
-                                                    "nullable": true,
-                                                    "enum": [
-                                                        "SUPERSTAR",
-                                                        "NONE"
-                                                    ]
-                                                },
-                                                "firstLogin": {
-                                                    "type": "number",
-                                                    "nullable": true
-                                                },
-                                                "lastLogin": {
-                                                    "type": "number",
-                                                    "nullable": true
-                                                },
-                                                "lastLogout": {
-                                                    "type": "number",
-                                                    "nullable": true
-                                                },
-                                                "stats": {
-                                                    "type": "object",
-                                                    "nullable": true
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/DataMissing"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/InvalidKey"
-                    },
-                    "429": {
-                        "$ref": "#/components/responses/RateLimitedHypixel"
-                    }
-                }
-            }
-        },
-        "/v1/hypixel/guild": {
-            "get": {
-                "tags": [
-                    "Hypixel Raw Data"
-                ],
-                "summary": "Get raw data from hypixel /guild endpoint",
-                "operationId": "getRawHypixelGuild",
-                "parameters": [
-                    {
-                        "name": "player",
-                        "in": "query",
-                        "description": "UUID of the player",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A successful response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean"
-                                        },
-                                        "guild": {
-                                            "type": "object"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/DataMissing"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/InvalidKey"
-                    },
-                    "429": {
-                        "$ref": "#/components/responses/RateLimitedHypixel"
-                    }
-                }
-            }
-        },
-        "/v1/hypixel/sykblock/profiles": {
-            "get": {
-                "tags": [
-                    "Hypixel Raw Data"
-                ],
-                "summary": "Get raw data from hypixel /skyblock/profiles endpoint",
-                "operationId": "getRawHypixelSkyblockProfiles",
-                "parameters": [
-                    {
-                        "name": "uuid",
-                        "in": "query",
-                        "description": "UUID of the player",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A successful response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean"
-                                        },
-                                        "profiles": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/SkyBlockProfile"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/DataMissing"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/InvalidKey"
-                    },
-                    "422": {
-                        "$ref": "#/components/responses/MalformedData"
-                    },
-                    "429": {
-                        "$ref": "#/components/responses/RateLimitedHypixel"
-                    }
-                }
-            }
-        },
-        "/v1/hypixel/sykblock/museum": {
-            "get": {
-                "tags": [
-                    "Hypixel Raw Data"
-                ],
-                "summary": "Get raw data from hypixel /skyblock/museum endpoint",
-                "operationId": "getRawHypixelSkyblockMuseum",
-                "parameters": [
-                    {
-                        "name": "profile",
-                        "in": "query",
-                        "description": "Profile ID selected profile of the player",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A successful response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean"
-                                        },
-                                        "profile": {
-                                            "$ref": "#/components/schemas/SkyBlockMuseum"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/InvalidKey"
-                    },
-                    "422": {
-                        "$ref": "#/components/responses/MalformedData"
-                    },
-                    "429": {
-                        "$ref": "#/components/responses/RateLimitedHypixel"
-                    }
-                }
-            }
-        },
-        "/v1/sbecommands/{command}/{uuid}": {
-            "get": {
-                "tags": [
-                    "SBECommands"
-                ],
-                "summary": "Get data for ChatTriggers SBECommands module",
-                "parameters": [
-                    {
-                        "name": "command",
-                        "in": "path",
-                        "description": "SBECommands's command name",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "uuid",
-                        "in": "path",
-                        "description": "UUID or Username of minecraft player",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A successful response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 200
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    },
-                    "429": {
-                        "$ref": "#/components/responses/RateLimited"
-                    }
-                }
-            }
-        },
-        "/v1/sbecommands/{command}/{uuid}/{profile}": {
-            "get": {
-                "tags": [
-                    "SBECommands"
-                ],
-                "summary": "Get data of specific profile for ChatTriggers SBECommands module",
-                "parameters": [
-                    {
-                        "name": "command",
-                        "in": "path",
-                        "description": "SBECommands's command name",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "uuid",
-                        "in": "path",
-                        "description": "UUID or Username of minecraft player",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "profile",
-                        "in": "path",
-                        "description": "profile name of skyblock hypixel",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A successful response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 200
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    },
-                    "429": {
-                        "$ref": "#/components/responses/RateLimited"
-                    }
-                }
-            }
-        },
-        "/v1/sbecommands/{command}": {
+        "/v1/auth/signup": {
             "post": {
                 "tags": [
-                    "SBECommands"
+                    "Authentication"
                 ],
-                "summary": "Get data of pcheck command for ChatTriggers SBECommands module",
-                "parameters": [
-                    {
-                        "name": "command",
-                        "in": "path",
-                        "description": "SBECommands's command name",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
+                "summary": "Signup endpoint.",
+                "operationId": "signup",
                 "requestBody": {
-                    "description": "list of uuid or username that will checked",
+                    "description": "email and password",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
-                                    "uuid": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string",
-                                            "description": "UUID or username",
-                                            "format": "uuid"
-                                        },
-                                        "example": ["ad8fefaa-8351-454b-b739-a4eaa872173f", "IcarusPhantom"]
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
                                     }
                                 }
                             }
@@ -1129,30 +712,44 @@
                                             "type": "integer",
                                             "example": 200
                                         },
-                                        "data": {
-                                            "type": "object"
+                                        "code": {
+                                            "type": "string",
+                                            "example": "SUCCESS"
                                         }
                                     }
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    },
-                    "429": {
-                        "$ref": "#/components/responses/RateLimited"
                     }
                 }
             }
         },
-        "/v1/statistics": {
-            "get": {
+        "/v1/auth/login": {
+            "post": {
                 "tags": [
-                    "Miscs"
+                    "Authentication"
                 ],
-                "summary": "Get statistics data of IcarusPhantom API",
-                "operationId": "getStatisticsData",
+                "summary": "Login endpoint.",
+                "operationId": "login",
+                "requestBody": {
+                    "description": "email and password",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "A successful response",
@@ -1161,20 +758,32 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "status": {
+                                        "success": {
                                             "type": "integer",
                                             "example": 200
                                         },
-                                        "routes": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "SUCCESS"
+                                        },
+                                        "data": {
                                             "type": "object",
                                             "properties": {
-                                                "endpoints1": {
-                                                    "type": "integer",
-                                                    "example": 100
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1bGlhbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6Imp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MDkxMzE5ODksImV4cCI6MTcwOTEzNTU4OX0.ceguIFo5dvzp3kZyLSRlc1eYiASLg6WF3bILLoUvCwU"
                                                 },
-                                                "endpoints2": {
-                                                    "type": "integer",
-                                                    "example": 150
+                                                "id": {
+                                                    "type": "string",
+                                                    "example": "65df48d0482d657b992a44ab"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "talangin@gmail.com"
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "talangin"
                                                 }
                                             }
                                         }
