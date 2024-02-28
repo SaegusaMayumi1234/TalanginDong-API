@@ -3,24 +3,18 @@ import { model, Schema } from 'mongoose';
 export const userSchema = model(
   'User',
   new Schema({
-    username: {
-      type: String,
-      trim: true,
-      required: true,
-      unique: true,
-    },
     email: {
       type: String,
       trim: true,
       required: true,
       unique: true,
     },
-    password: {
+    username: {
       type: String,
       trim: true,
       required: true,
     },
-    salt: {
+    password: {
       type: String,
       trim: true,
       required: true,
