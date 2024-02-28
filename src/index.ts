@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -9,6 +9,8 @@ import * as logger from './utils/logger';
 import configValidator from './utils/configValidator';
 import db from './storages/mongoDB/index';
 import NotFound from './middlewares/notFound';
+import SignupRoute from './routes/v1/signup';
+import LoginRoute from './routes/v1/login';
 
 dotenv.config();
 configValidator();
@@ -31,9 +33,8 @@ const port = process.env.PORT || 3000;
 
   app.use(express.static(path.join(__dirname, '/public')));
 
-  app.get('/', (req: Request, res: Response) => {
-    res.send('Success');
-  });
+  app.post('/v1/auth/signup', SignupRoute);
+  app.post('/v1/auth/login', LoginRoute);
 
   app.use(NotFound);
 
