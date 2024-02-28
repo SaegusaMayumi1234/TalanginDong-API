@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 
 import * as logger from '../../utils/logger';
+import { userSchema } from './schemas/user';
 
 export default {
+  userSchema,
   mongoose,
 };
 
