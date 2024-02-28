@@ -9,6 +9,7 @@ import * as logger from './utils/logger';
 import configValidator from './utils/configValidator';
 import db from './storages/mongoDB/index';
 import NotFound from './middlewares/notFound';
+import ErrorHandler from './middlewares/errorHandler';
 import SignupRoute from './routes/v1/signup';
 import LoginRoute from './routes/v1/login';
 
@@ -37,6 +38,7 @@ const port = process.env.PORT || 3000;
   app.post('/v1/auth/login', LoginRoute);
 
   app.use(NotFound);
+  app.use(ErrorHandler);
 
   app.listen(port, () => {
     logger.info(`TalanginDong-API server is running at http://localhost:${port}`);
