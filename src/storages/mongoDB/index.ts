@@ -14,14 +14,14 @@ mongoose.connection.on('connecting', () => {
   logger.info('[Mongoose] Connecting to MongoDB');
 });
 
-mongoose.connection.on('connected', (error) => {
+mongoose.connection.on('connected', () => {
   logger.info('[Mongoose] Connected to MongoDB');
 });
 
-mongoose.connection.on('disconnecting', (error) => {
+mongoose.connection.on('disconnecting', () => {
   logger.info('[Mongoose] Disconnecting from MongoDB');
 });
 
-mongoose.connection.on('disconnected', (error) => {
+mongoose.connection.on('disconnected', () => {
   logger.info('[Mongoose] Disconnected from MongoDB');
 });
