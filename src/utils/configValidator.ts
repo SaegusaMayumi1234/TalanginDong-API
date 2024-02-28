@@ -34,4 +34,8 @@ export default () => {
   if (!process.env.MONGODBNAME) {
     throw new Error('Missing env MONGODBNAME! (Allowed value: string)');
   }
+
+  if (!process.env.JWTKEY) {
+    throw new Error('Missing env JWTKEY! (Allowed value: string)');
+  }
 };
