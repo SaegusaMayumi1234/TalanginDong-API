@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import * as logger from './utils/logger';
+import db from './storages/mongoDB/index';
 import NotFound from './middlewares/notFound';
 
 dotenv.config();
@@ -15,18 +16,25 @@ const app: Express = express();
 const port = process.env.PORT || 3000;
 const proxied = process.env.PROXIED;
 
-app.set('trust proxy', !proxied || proxied === 'false' || isNaN(parseInt(proxied)) ? false : parseInt(proxied));
-// app.use(Auth);
-app.use(cors());
-app.use(express.json({ limit: '15mb' }));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, '/public')));
-app.get('/', (req: Request, res: Response) => {
-  res.send('Success');
-});
+(async () => {
+  await db.mongoose.connect(process.env.MONGODBURI!, {
+    dbName: process.env.MONGODBNAME,
+  });
+  app.set('trust proxy', !proxied || proxied === 'false' || isNaN(parseInt(proxied)) ? false : parseInt(proxied));
+  // app.use(Auth);
+  app.use(cors());
+  app.use(express.json({ limit: '15mb' }));
+  app.use(express.urlencoded({ extended: true }));
 
-app.use(NotFound);
+  app.use(express.static(path.join(__dirname, '/public')));
 
-app.listen(port, () => {
-  logger.info(`TalanginDong-API server is running at http://localhost:${port}`);
+  app.get('/', (req: Request, res: Response) => {
+    res.send('Success');
+  });
+
+  app.use(NotFound);
+
+  app.listen(port, () => {
+    logger.info(`TalanginDong-API server is running at http://localhost:${port}`);
+  });
 });
