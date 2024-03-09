@@ -19,7 +19,7 @@ interface ISummaryKey {
 }
 
 interface ISummary {
-  subTotal: ISummaryKey;
+  subtotal: ISummaryKey;
   tax: ISummaryKey;
   discount: ISummaryKey;
   serviceCharge: ISummaryKey;
@@ -40,7 +40,7 @@ export const scan = async (bytes: string) => {
 
     const expenseItems: IParsedItems[] = [];
     const expenseSummary: ISummary = {
-      subTotal: {
+      subtotal: {
         text: 0,
         confidence: 0,
       },
@@ -86,16 +86,16 @@ export const scan = async (bytes: string) => {
         if (summary.Type?.Text === 'SUBTOTAL') {
           const text = currencyStringToNumber(summary.ValueDetection?.Text ?? '0');
           const confidence = summary.Type.Confidence ?? 0;
-          if (expenseSummary.subTotal.text === 0 && expenseSummary.subTotal.confidence === 0) {
-            expenseSummary.subTotal.text = text;
-            expenseSummary.subTotal.confidence = confidence;
+          if (expenseSummary.subtotal.text === 0 && expenseSummary.subtotal.confidence === 0) {
+            expenseSummary.subtotal.text = text;
+            expenseSummary.subtotal.confidence = confidence;
           }
           if (
-            confidence > expenseSummary.subTotal.confidence ||
-            (confidence === expenseSummary.subTotal.confidence && text > expenseSummary.subTotal.text)
+            confidence > expenseSummary.subtotal.confidence ||
+            (confidence === expenseSummary.subtotal.confidence && text > expenseSummary.subtotal.text)
           ) {
-            expenseSummary.subTotal.confidence = confidence;
-            expenseSummary.subTotal.text = text;
+            expenseSummary.subtotal.confidence = confidence;
+            expenseSummary.subtotal.text = text;
           }
         } else if (summary.Type?.Text === 'TAX') {
           const text = currencyStringToNumber(summary.ValueDetection?.Text ?? '0');
@@ -153,7 +153,7 @@ export const scan = async (bytes: string) => {
     return {
       items: expenseItems,
       summary: {
-        subTotal: expenseSummary.subTotal.text,
+        subtotal: expenseSummary.subtotal.text,
         tax: expenseSummary.tax.text,
         discount: expenseSummary.discount.text,
         serviceCharge: expenseSummary.serviceCharge.text,
