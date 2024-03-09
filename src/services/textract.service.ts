@@ -14,7 +14,7 @@ interface IParsedItems {
 }
 
 interface ISummaryKey {
-  text: number;
+  value: number;
   confidence: number;
 }
 
@@ -25,6 +25,14 @@ interface ISummary {
   serviceCharge: ISummaryKey;
   total: ISummaryKey;
 }
+
+const summaryTypeToPropertyKey = {
+  SUBTOTAL: 'subtotal',
+  TAX: 'tax',
+  DISCOUNT: 'discount',
+  SERVICE_CHARGE: 'serviceCharge',
+  TOTAL: 'total',
+};
 
 const textractClient = new TextractClient({ region: config.aws.region, credentials: fromIni({ profile: config.aws.profile }) });
 
@@ -41,23 +49,23 @@ export const scan = async (bytes: string) => {
     const expenseItems: IParsedItems[] = [];
     const expenseSummary: ISummary = {
       subtotal: {
-        text: 0,
+        value: 0,
         confidence: 0,
       },
       tax: {
-        text: 0,
+        value: 0,
         confidence: 0,
       },
       discount: {
-        text: 0,
+        value: 0,
         confidence: 0,
       },
       serviceCharge: {
-        text: 0,
+        value: 0,
         confidence: 0,
       },
       total: {
-        text: 0,
+        value: 0,
         confidence: 0,
       },
     };
@@ -83,69 +91,21 @@ export const scan = async (bytes: string) => {
         }
       }
       for (const summary of document.SummaryFields ?? []) {
-        if (summary.Type?.Text === 'SUBTOTAL') {
+        const type = (summary.Type?.Text ?? '') as keyof typeof summaryTypeToPropertyKey;
+        if (Object.keys(summaryTypeToPropertyKey).includes(type)) {
           const text = currencyStringToNumber(summary.ValueDetection?.Text ?? '0');
-          const confidence = summary.Type.Confidence ?? 0;
-          if (expenseSummary.subtotal.text === 0 && expenseSummary.subtotal.confidence === 0) {
-            expenseSummary.subtotal.text = text;
-            expenseSummary.subtotal.confidence = confidence;
+          const confidence = summary.Type?.Confidence ?? 0;
+          const propertyKey = summaryTypeToPropertyKey[type] as keyof typeof expenseSummary;
+          if (expenseSummary[propertyKey].value === 0 && expenseSummary[propertyKey].confidence === 0) {
+            expenseSummary[propertyKey].value = text;
+            expenseSummary[propertyKey].confidence = confidence;
           }
           if (
-            confidence > expenseSummary.subtotal.confidence ||
-            (confidence === expenseSummary.subtotal.confidence && text > expenseSummary.subtotal.text)
+            confidence > expenseSummary[propertyKey].confidence ||
+            (confidence === expenseSummary[propertyKey].confidence && text > expenseSummary[propertyKey].value)
           ) {
-            expenseSummary.subtotal.confidence = confidence;
-            expenseSummary.subtotal.text = text;
-          }
-        } else if (summary.Type?.Text === 'TAX') {
-          const text = currencyStringToNumber(summary.ValueDetection?.Text ?? '0');
-          const confidence = summary.Type.Confidence ?? 0;
-          if (expenseSummary.tax.text === 0 && expenseSummary.tax.confidence === 0) {
-            expenseSummary.tax.text = text;
-            expenseSummary.tax.confidence = confidence;
-          }
-          if (confidence > expenseSummary.tax.confidence || (confidence === expenseSummary.tax.confidence && text > expenseSummary.tax.text)) {
-            expenseSummary.tax.confidence = confidence;
-            expenseSummary.tax.text = text;
-          }
-        } else if (summary.Type?.Text === 'DISCOUNT') {
-          const text = currencyStringToNumber(summary.ValueDetection?.Text ?? '0');
-          const confidence = summary.Type.Confidence ?? 0;
-          if (expenseSummary.discount.text === 0 && expenseSummary.discount.confidence === 0) {
-            expenseSummary.discount.text = text;
-            expenseSummary.discount.confidence = confidence;
-          }
-          if (
-            confidence > expenseSummary.discount.confidence ||
-            (confidence === expenseSummary.discount.confidence && text > expenseSummary.discount.text)
-          ) {
-            expenseSummary.discount.confidence = confidence;
-            expenseSummary.discount.text = text;
-          }
-        } else if (summary.Type?.Text === 'SERVICE_CHARGE') {
-          const text = currencyStringToNumber(summary.ValueDetection?.Text ?? '0');
-          const confidence = summary.Type.Confidence ?? 0;
-          if (expenseSummary.serviceCharge.text === 0 && expenseSummary.serviceCharge.confidence === 0) {
-            expenseSummary.serviceCharge.text = text;
-            expenseSummary.serviceCharge.confidence = confidence;
-          }
-          if (
-            confidence > expenseSummary.serviceCharge.confidence ||
-            (confidence === expenseSummary.serviceCharge.confidence && text > expenseSummary.serviceCharge.text)
-          ) {
-            expenseSummary.serviceCharge.confidence = confidence;
-            expenseSummary.serviceCharge.text = text;
-          }
-        } else if (summary.Type?.Text === 'TOTAL') {
-          const text = currencyStringToNumber(summary.ValueDetection?.Text ?? '0');
-          const confidence = summary.Type.Confidence ?? 0;
-          if (expenseSummary.total.text === 0 && expenseSummary.total.confidence === 0) {
-            expenseSummary.total.text = text;
-            expenseSummary.total.confidence = confidence;
-          }
-          if (confidence > expenseSummary.total.confidence || (confidence === expenseSummary.total.confidence && text > expenseSummary.total.text)) {
-            expenseSummary.total.confidence = confidence;
-            expenseSummary.total.text = text;
+            expenseSummary[propertyKey].confidence = confidence;
+            expenseSummary[propertyKey].value = text;
           }
         }
       }
@@ -153,11 +113,11 @@ export const scan = async (bytes: string) => {
     return {
       items: expenseItems,
       summary: {
-        subtotal: expenseSummary.subtotal.text,
-        tax: expenseSummary.tax.text,
-        discount: expenseSummary.discount.text,
-        serviceCharge: expenseSummary.serviceCharge.text,
-        total: expenseSummary.total.text,
+        subtotal: expenseSummary.subtotal.value,
+        tax: expenseSummary.tax.value,
+        discount: expenseSummary.discount.value,
+        serviceCharge: expenseSummary.serviceCharge.value,
+        total: expenseSummary.total.value,
       },
     };
   } catch (error) {
