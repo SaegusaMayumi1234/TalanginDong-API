@@ -5,7 +5,7 @@ import httpStatus from 'http-status';
 
 import config from '../config/config';
 import ApiError from '../utils/apiError';
-import { stringToMoney } from '../utils/stringModifier';
+import { currencyStringToNumber } from '../utils/stringModifier';
 
 interface IParsedItems {
   item: string;
@@ -74,9 +74,9 @@ export const scan = async (bytes: string) => {
             if (data.Type?.Text === 'ITEM') {
               parsedItem.item = data.ValueDetection?.Text ?? '';
             } else if (data.Type?.Text === 'QUANTITY') {
-              parsedItem.quantity = stringToMoney(data.ValueDetection?.Text ?? '0');
+              parsedItem.quantity = currencyStringToNumber(data.ValueDetection?.Text ?? '0');
             } else if (data.Type?.Text === 'PRICE') {
-              parsedItem.price = stringToMoney(data.ValueDetection?.Text ?? '0');
+              parsedItem.price = currencyStringToNumber(data.ValueDetection?.Text ?? '0');
             }
           }
           expenseItems.push(parsedItem);
@@ -84,7 +84,7 @@ export const scan = async (bytes: string) => {
       }
       for (const summary of document.SummaryFields ?? []) {
         if (summary.Type?.Text === 'SUBTOTAL') {
-          const text = stringToMoney(summary.ValueDetection?.Text ?? '0');
+          const text = currencyStringToNumber(summary.ValueDetection?.Text ?? '0');
           const confidence = summary.Type.Confidence ?? 0;
           if (expenseSummary.subTotal.text === 0 && expenseSummary.subTotal.confidence === 0) {
             expenseSummary.subTotal.text = text;
@@ -98,7 +98,7 @@ export const scan = async (bytes: string) => {
             expenseSummary.subTotal.text = text;
           }
         } else if (summary.Type?.Text === 'TAX') {
-          const text = stringToMoney(summary.ValueDetection?.Text ?? '0');
+          const text = currencyStringToNumber(summary.ValueDetection?.Text ?? '0');
           const confidence = summary.Type.Confidence ?? 0;
           if (expenseSummary.tax.text === 0 && expenseSummary.tax.confidence === 0) {
             expenseSummary.tax.text = text;
@@ -109,7 +109,7 @@ export const scan = async (bytes: string) => {
             expenseSummary.tax.text = text;
           }
         } else if (summary.Type?.Text === 'DISCOUNT') {
-          const text = stringToMoney(summary.ValueDetection?.Text ?? '0');
+          const text = currencyStringToNumber(summary.ValueDetection?.Text ?? '0');
           const confidence = summary.Type.Confidence ?? 0;
           if (expenseSummary.discount.text === 0 && expenseSummary.discount.confidence === 0) {
             expenseSummary.discount.text = text;
@@ -123,7 +123,7 @@ export const scan = async (bytes: string) => {
             expenseSummary.discount.text = text;
           }
         } else if (summary.Type?.Text === 'SERVICE_CHARGE') {
-          const text = stringToMoney(summary.ValueDetection?.Text ?? '0');
+          const text = currencyStringToNumber(summary.ValueDetection?.Text ?? '0');
           const confidence = summary.Type.Confidence ?? 0;
           if (expenseSummary.serviceCharge.text === 0 && expenseSummary.serviceCharge.confidence === 0) {
             expenseSummary.serviceCharge.text = text;
@@ -137,7 +137,7 @@ export const scan = async (bytes: string) => {
             expenseSummary.serviceCharge.text = text;
           }
         } else if (summary.Type?.Text === 'TOTAL') {
-          const text = stringToMoney(summary.ValueDetection?.Text ?? '0');
+          const text = currencyStringToNumber(summary.ValueDetection?.Text ?? '0');
           const confidence = summary.Type.Confidence ?? 0;
           if (expenseSummary.total.text === 0 && expenseSummary.total.confidence === 0) {
             expenseSummary.total.text = text;
