@@ -35,7 +35,7 @@ export const login = async (email: string, password: string) => {
       username: user.username,
     },
     config.jwt.secret,
-    { expiresIn: '1h' },
+    { expiresIn: config.jwt.expired },
   );
   return {
     token,
