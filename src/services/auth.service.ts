@@ -16,7 +16,7 @@ export const register = async (email: string, password: string) => {
     const hash = await bcrypt.hash(password, 10);
     await new db.userSchema({ email, username: email, password: hash }).save();
   } catch (error: any) {
-    if (error.core === 11000) {
+    if (error.code === 11000) {
       throw new ApiError(httpStatus.CONFLICT, 'Email already exist');
     } else {
       throw error;
