@@ -16,3 +16,11 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     data,
   });
 });
+
+export const refreshToken = catchAsync(async (req: Request, res: Response) => {
+  const data = await AuthService.refreshToken(req.body.refreshToken);
+  res.status(httpStatus.OK).send({
+    status: httpStatus.OK,
+    data,
+  });
+});

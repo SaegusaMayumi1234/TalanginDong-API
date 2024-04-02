@@ -14,6 +14,7 @@ const envSchema = Joi.object()
     MONGODB_NAME: Joi.string().required(),
     JWT_SECRET: Joi.string().required(),
     JWT_EXPIRED: Joi.string().required(),
+    JWT_REFRESH_EXPIRED: Joi.string().required(),
     AWS_REGION: Joi.string().required(),
     AWS_PROFILE: Joi.string().required(),
   })
@@ -36,6 +37,7 @@ export default {
   jwt: {
     secret: envVars.JWT_SECRET,
     expired: envVars.JWT_EXPIRED,
+    refreshExpired: envVars.JWT_REFRESH_EXPIRED,
   },
   aws: {
     region: envVars.AWS_REGION,
