@@ -40,27 +40,20 @@ export const login = async (email: string, password: string) => {
   const token = jwt.sign(
     {
       id: user._id,
-      email,
-      username: user.username,
     },
-    config.jwt.secret,
+    config.jwt.secret + user.password,
     { expiresIn: config.jwt.expired },
   );
   const refreshToken = jwt.sign(
     {
       id: user._id,
-      email,
-      username: user.username,
     },
-    config.jwt.secret,
+    config.jwt.secret + user.password,
     { expiresIn: config.jwt.refreshExpired },
   );
   return {
     token,
     refreshToken,
-    id: user._id,
-    email: user.email,
-    username: user.username,
   };
 };
 
@@ -70,15 +63,17 @@ export const refreshToken = async (refreshToken: string) => {
     const decodedToken = jwt.verify(refreshToken, config.jwt.secret, { complete: true });
     decodedPayload = decodedToken.payload as JwtPayload;
   } catch (error: any) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Refresh Token is Invalid');
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Refresh token is invalid');
+  }
+  const user = await db.userSchema.findById(decodedPayload.id);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User id not found');
   }
   const token = jwt.sign(
     {
       id: decodedPayload.id,
-      email: decodedPayload.email,
-      username: decodedPayload.username,
     },
-    config.jwt.secret,
+    config.jwt.secret + user.password,
     { expiresIn: config.jwt.expired },
   );
   return {
