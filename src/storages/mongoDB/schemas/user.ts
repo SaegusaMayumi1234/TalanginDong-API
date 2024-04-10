@@ -13,6 +13,7 @@ export const userSchema = model(
       type: String,
       trim: true,
       required: true,
+      unique: true,
     },
     password: {
       type: String,
