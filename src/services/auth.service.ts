@@ -18,7 +18,6 @@ export const register = async (username: string, email: string, password: string
     const hash = await bcrypt.hash(password, 10);
     await new db.userSchema({ username, email, password: hash }).save();
   } catch (error: any) {
-    console.log(error);
     if (error.code === 11000) {
       const errKey = Object.keys(error.keyValue);
       if (errKey.includes('email')) {
