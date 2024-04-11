@@ -1,6 +1,6 @@
 import httpStatus from 'http-status';
 import bcrypt from 'bcrypt';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 import config from '../config/config';
 import db from '../storages/mongoDB/index';
@@ -58,25 +58,28 @@ export const login = async (email: string, password: string) => {
 };
 
 export const refreshToken = async (refreshToken: string) => {
-  let decodedPayload: JwtPayload;
   try {
-    const decodedToken = jwt.verify(refreshToken, config.jwt.secret, { complete: true });
-    decodedPayload = decodedToken.payload as JwtPayload;
-  } catch (error: any) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Refresh token is invalid');
+    const decodedPayload = JSON.parse(Buffer.from(refreshToken.split('.')[1], 'base64').toString('utf8'));
+    const user = await db.userSchema.findById(decodedPayload.id);
+    if (!user) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid refresh token');
+    }
+    jwt.verify(refreshToken, config.jwt.secret + user.password);
+    const token = jwt.sign(
+      {
+        id: decodedPayload.id,
+      },
+      config.jwt.secret + user.password,
+      { expiresIn: config.jwt.expired },
+    );
+    return { token };
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.NotBeforeError) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid refresh token');
+    } else if (error instanceof jwt.TokenExpiredError) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'Refresh token expired');
+    } else {
+      throw error;
+    }
   }
-  const user = await db.userSchema.findById(decodedPayload.id);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User id not found');
-  }
-  const token = jwt.sign(
-    {
-      id: decodedPayload.id,
-    },
-    config.jwt.secret + user.password,
-    { expiresIn: config.jwt.expired },
-  );
-  return {
-    token,
-  };
 };
