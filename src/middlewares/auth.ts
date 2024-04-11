@@ -12,7 +12,7 @@ export default () => async (req: Request, res: Response, next: NextFunction) => 
     const decodedPayload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString('utf8'));
     const user = await db.userSchema.findById(decodedPayload.id);
     if (!user) {
-      next(new ApiError(httpStatus.NOT_FOUND, 'User id not found'));
+      next(new ApiError(httpStatus.UNAUTHORIZED, 'Invalid authorization token'));
       return;
     }
     jwt.verify(token, config.jwt.secret + user.password);
