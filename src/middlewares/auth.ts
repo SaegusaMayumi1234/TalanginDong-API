@@ -8,6 +8,10 @@ import ApiError from '../utils/apiError';
 
 export default () => async (req: Request, res: Response, next: NextFunction) => {
   try {
+    if (!req.headers.authorization) {
+      next(new ApiError(httpStatus.UNAUTHORIZED, 'Invalid authorization token'));
+      return;
+    }
     const token = (req.headers.authorization ?? '').replace(/Bearer /, '');
     const decodedPayload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString('utf8'));
     const user = await db.userSchema.findById(decodedPayload.id);
