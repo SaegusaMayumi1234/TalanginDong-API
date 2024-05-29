@@ -2,9 +2,11 @@ import mongoose from 'mongoose';
 
 import * as logger from '../../utils/logger';
 import { userSchema } from './schemas/user';
+import { friendSchema } from './schemas/friend';
 
 export default {
   userSchema,
+  friendSchema,
   mongoose,
 };
 
