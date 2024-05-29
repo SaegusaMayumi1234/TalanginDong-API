@@ -1,8 +1,14 @@
 import { model, Schema } from 'mongoose';
 
+interface IuserSchema {
+  email: string;
+  username: string;
+  password: string;
+}
+
 export const userSchema = model(
   'User',
-  new Schema({
+  new Schema<IuserSchema>({
     email: {
       type: String,
       trim: true,
