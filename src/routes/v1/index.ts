@@ -1,7 +1,8 @@
 import { Router } from 'express';
 
 import AuthRoute from './auth.route';
-import Textract from './textract.route';
+import TextractRoute from './textract.route';
+import FriendRoute from './friend.route';
 
 const router = Router();
 
@@ -12,7 +13,11 @@ const defaultRoutes = [
   },
   {
     path: '/textract',
-    route: Textract,
+    route: TextractRoute,
+  },
+  {
+    path: '/friend',
+    route: FriendRoute,
   },
 ];
 
