@@ -11,3 +11,11 @@ export const list = catchAsync(async (req: Request, res: Response) => {
     data,
   });
 });
+
+export const search = catchAsync(async (req: Request, res: Response) => {
+  const data = await FriendService.search(res.locals.user._id.toString(), req.query.search!.toString());
+  res.status(httpStatus.OK).send({
+    status: httpStatus.OK,
+    data,
+  });
+});
