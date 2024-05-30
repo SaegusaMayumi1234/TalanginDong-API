@@ -23,3 +23,9 @@ export const accept = {
     requesterId: Joi.string().required(),
   }),
 };
+
+export const reject = {
+  body: Joi.object().keys({
+    requesterId: Joi.string().required(),
+  }),
+};

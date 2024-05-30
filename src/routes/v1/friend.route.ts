@@ -13,5 +13,6 @@ router.post('/request', auth(), validate(FriendValidation.request), FriendContro
 router.delete('/cancel', auth(), validate(FriendValidation.cancel), FriendController.cancel);
 router.get('/request-list', auth(), FriendController.requestList);
 router.put('/accept', auth(), validate(FriendValidation.accept), FriendController.accept);
+router.delete('/reject', auth(), validate(FriendValidation.reject), FriendController.reject);
 
 export default router;
