@@ -21,6 +21,7 @@ export const list = async (userId: string) => {
 
 export const search = async (userId: string, search: string) => {
   const friendListId = (await db.friendSchema.find({ requesterId: userId })).map((value) => new mongoose.Types.ObjectId(value.recipientId));
+  friendListId.push(new mongoose.Types.ObjectId(userId));
   const userList = await db.userSchema
     .find({
       _id: {
@@ -29,7 +30,7 @@ export const search = async (userId: string, search: string) => {
       username: new RegExp(`^${search}`),
     })
     .sort({ username: 1 });
-  return userList;
+  return userList.map((value) => ({ id: value._id.toString(), username: value.username }));
 };
 
 // this function could be improved by removing find check first
