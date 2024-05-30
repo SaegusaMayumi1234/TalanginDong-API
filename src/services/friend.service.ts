@@ -53,19 +53,10 @@ export const request = async (requesterId: string, recipientId: string) => {
   }
 };
 
-// this function could be improved by removing find check first
 export const cancel = async (requesterId: string, recipientId: string) => {
-  if (!(await db.friendSchema.find({ requester: requesterId, recipient: recipientId }))) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Friend data not found');
-  }
-  try {
-    await db.friendSchema.deleteOne({ requesterId, recipientId });
-  } catch (error: any) {
-    // need improvement and testing
-    if (error.code) {
-      throw error;
-    }
-    throw error;
+  const deleteQuery = await db.friendSchema.deleteOne({ requesterId, recipientId });
+  if (deleteQuery.deletedCount === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Already cancelled');
   }
 };
 
