@@ -27,3 +27,11 @@ export const request = catchAsync(async (req: Request, res: Response) => {
     data,
   });
 });
+
+export const cancel = catchAsync(async (req: Request, res: Response) => {
+  const data = await FriendService.cancel(res.locals.user._id.toString(), req.body.recipientId);
+  res.status(httpStatus.OK).send({
+    status: httpStatus.OK,
+    data,
+  });
+});

@@ -11,3 +11,9 @@ export const request = {
     recipientId: Joi.string().required(),
   }),
 };
+
+export const cancel = {
+  body: Joi.object().keys({
+    recipientId: Joi.string().required(),
+  }),
+};
