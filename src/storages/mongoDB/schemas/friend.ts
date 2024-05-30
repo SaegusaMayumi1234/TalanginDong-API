@@ -1,20 +1,27 @@
 import { model, Schema } from 'mongoose';
 
 interface IfriendSchema {
-  requester: string;
-  recipient: string;
+  combineId: string;
+  requesterId: string;
+  recipientId: string;
   accepted: Boolean;
 }
 
 export const friendSchema = model(
   'Friend',
   new Schema<IfriendSchema>({
-    requester: {
+    combineId: {
+      type: String,
+      trim: true,
+      required: true,
+      unique: true,
+    },
+    requesterId: {
       type: String,
       trim: true,
       required: true,
     },
-    recipient: {
+    recipientId: {
       type: String,
       trim: true,
       required: true,
