@@ -33,11 +33,7 @@ export const search = async (userId: string, search: string) => {
   return userList.map((value) => ({ id: value._id.toString(), username: value.username }));
 };
 
-// this function could be improved by removing find check first
 export const request = async (requesterId: string, recipientId: string) => {
-  if (await db.friendSchema.find({ requester: requesterId, recipient: recipientId })) {
-    throw new ApiError(httpStatus.CONFLICT, 'Already requested');
-  }
   try {
     await new db.friendSchema({
       combineId: `${requesterId}-${recipientId}`,
