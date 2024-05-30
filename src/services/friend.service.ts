@@ -71,12 +71,13 @@ export const requestList = async (requesterId: string) => {
   return requestList.map((value) => ({ id: value._id.toString(), username: value.username }));
 };
 
-// can be improved
 export const accept = async (requesterId: string, recipientId: string) => {
-  if (!(await db.friendSchema.find({ requester: requesterId, recipient: recipientId }))) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Friend data not found');
+  const updateQuery = await db.friendSchema.updateOne({ requesterId: requesterId, recipientId: recipientId }, { accepted: true });
+  if (updateQuery.matchedCount === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Friend request not found');
+  } else if (updateQuery.matchedCount > 0 && updateQuery.modifiedCount === 0) {
+    throw new ApiError(httpStatus.CONFLICT, 'Already accepted');
   }
-  await db.friendSchema.findOneAndUpdate({ requester: requesterId, recipient: recipientId, accepted: false }, { accepted: true });
 };
 
 export const reject = async (requesterId: string, recipientId: string) => {
