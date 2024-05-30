@@ -43,3 +43,11 @@ export const requestList = catchAsync(async (req: Request, res: Response) => {
     data,
   });
 });
+
+export const accept = catchAsync(async (req: Request, res: Response) => {
+  const data = await FriendService.accept(req.body.requesterId, res.locals.user._id.toString());
+  res.status(httpStatus.OK).send({
+    status: httpStatus.OK,
+    data,
+  });
+});
