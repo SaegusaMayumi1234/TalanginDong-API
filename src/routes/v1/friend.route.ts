@@ -11,5 +11,6 @@ router.get('/list', auth(), FriendController.list);
 router.get('/search', auth(), validate(FriendValidation.search), FriendController.search);
 router.post('/request', auth(), validate(FriendValidation.request), FriendController.request);
 router.delete('/cancel', auth(), validate(FriendValidation.cancel), FriendController.cancel);
+router.get('/request-list', auth(), FriendController.requestList);
 
 export default router;

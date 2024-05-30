@@ -62,15 +62,13 @@ export const cancel = async (requesterId: string, recipientId: string) => {
 
 export const requestList = async (requesterId: string) => {
   const requestListId = (await db.friendSchema.find({ requesterId, accepted: false })).map((value) => new mongoose.Types.ObjectId(value.recipientId));
-  if (requestListId.length === 0) {
-    return [];
-  }
+  if (requestListId.length === 0) return [];
   const requestList = await db.userSchema.find({
     _id: {
       $in: requestListId,
     },
   });
-  return requestList;
+  return requestList.map((value) => ({ id: value._id.toString(), username: value.username }));
 };
 
 // can be improved
