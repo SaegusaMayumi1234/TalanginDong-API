@@ -59,3 +59,11 @@ export const reject = catchAsync(async (req: Request, res: Response) => {
     data,
   });
 });
+
+export const remove = catchAsync(async (req: Request, res: Response) => {
+  const data = await FriendService.remove(res.locals.user._id.toString(), req.body.friendId);
+  res.status(httpStatus.OK).send({
+    status: httpStatus.OK,
+    data,
+  });
+});

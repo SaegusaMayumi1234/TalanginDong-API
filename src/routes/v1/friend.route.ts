@@ -14,5 +14,6 @@ router.delete('/cancel', auth(), validate(FriendValidation.cancel), FriendContro
 router.get('/request-list', auth(), FriendController.requestList);
 router.put('/accept', auth(), validate(FriendValidation.accept), FriendController.accept);
 router.delete('/reject', auth(), validate(FriendValidation.reject), FriendController.reject);
+router.delete('/remove', auth(), validate(FriendValidation.remove), FriendController.remove);
 
 export default router;

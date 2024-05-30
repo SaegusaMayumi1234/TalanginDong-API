@@ -29,3 +29,9 @@ export const reject = {
     requesterId: Joi.string().required(),
   }),
 };
+
+export const remove = {
+  body: Joi.object().keys({
+    friendId: Joi.string().required(),
+  }),
+};
