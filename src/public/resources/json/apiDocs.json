@@ -672,8 +672,8 @@
                 "tags": [
                     "Friend"
                 ],
-                "summary": "Accept Friend",
-                "description": "Endpoint for accepting friend.",
+                "summary": "Accept Friend Request",
+                "description": "Endpoint for accepting friend request",
                 "operationId": "accept",
                 "security": [{
                     "bearerAuth": []
@@ -720,7 +720,7 @@
                 "tags": [
                     "Friend"
                 ],
-                "summary": "Cancel Friend Request.",
+                "summary": "Cancel Friend Request",
                 "description": "Endpoint for cancelling friend request.",
                 "operationId": "cancel",
                 "security": [{
@@ -765,7 +765,7 @@
                 "tags": [
                     "Friend"
                 ],
-                "summary": "Reject Friend Request.",
+                "summary": "Reject Friend Request",
                 "description": "Endpoint for rejecting friend request.",
                 "operationId": "reject",
                 "security": [{
