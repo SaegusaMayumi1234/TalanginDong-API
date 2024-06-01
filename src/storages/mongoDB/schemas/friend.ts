@@ -4,7 +4,7 @@ interface IfriendSchema {
   combineId: string;
   requesterId: string;
   recipientId: string;
-  accepted: Boolean;
+  status: Number;
 }
 
 export const friendSchema = model(
@@ -26,9 +26,13 @@ export const friendSchema = model(
       trim: true,
       required: true,
     },
-    accepted: {
-      type: Boolean,
-      required: true,
+    status: {
+      type: Number,
+      enums: [
+        0, //'requested',
+        1, //'pending',
+        2, //'friends'
+      ],
     },
   }),
   'Friend',

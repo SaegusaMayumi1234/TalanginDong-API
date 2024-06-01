@@ -5,18 +5,18 @@ import db from '../storages/mongoDB/index';
 import ApiError from '../utils/apiError';
 
 export const list = async (userId: string) => {
-  const friendListId = (await db.friendSchema.find({ requesterId: userId, accepted: true })).map(
-    (value) => new mongoose.Types.ObjectId(value.requesterId),
+  const friendListId = (await db.friendSchema.find({ requesterId: userId, status: 2 })).map(
+    (value) => new mongoose.Types.ObjectId(value.recipientId),
   );
   if (friendListId.length === 0) {
     return [];
   }
-  const friendList = await db.userSchema.find({
+  const userList = await db.userSchema.find({
     _id: {
       $in: friendListId,
     },
   });
-  return friendList;
+  return userList.map((value) => ({ id: value._id.toString(), username: value.username }));
 };
 
 export const search = async (userId: string, search: string) => {
@@ -35,17 +35,61 @@ export const search = async (userId: string, search: string) => {
 
 export const request = async (requesterId: string, recipientId: string) => {
   try {
-    await new db.friendSchema({
-      combineId: `${requesterId}-${recipientId}`,
-      requesterId,
-      recipientId,
-      accepted: false,
-    }).save();
+    const res1 = await db.friendSchema.updateOne(
+      {
+        requesterId,
+        recipientId,
+      },
+      {
+        $setOnInsert: {
+          combineId: `${requesterId}-${recipientId}`,
+          requesterId,
+          recipientId,
+          status: 0,
+        },
+      },
+      {
+        upsert: true,
+      },
+    );
+    if (res1.matchedCount > 0) {
+      throw new ApiError(httpStatus.CONFLICT, 'Already requested');
+    }
+    const res2 = await db.friendSchema.findOneAndUpdate(
+      {
+        requesterId: recipientId,
+        recipientId: requesterId,
+      },
+      {
+        $setOnInsert: {
+          combineId: `${recipientId}-${requesterId}`,
+          requesterId: recipientId,
+          recipientId: requesterId,
+          status: 1,
+        },
+      },
+      {
+        upsert: true,
+      },
+    );
+    if (res2) {
+      if (res2.status === 1) {
+        throw new ApiError(httpStatus.CONFLICT, 'Already requested');
+      } else if (res2.status === 0) {
+        await db.friendSchema.findOneAndUpdate(
+          {
+            requesterId: recipientId,
+            recipientId: requesterId,
+          },
+          {
+            status: 1,
+          },
+        );
+      }
+    }
   } catch (error: any) {
-    // need testing
     if (error.code === 11000) {
-      const errKey = Object.keys(error.keyValue);
-      if (errKey.includes('combineId')) {
+      if (error.message.includes('combineId')) {
         throw new ApiError(httpStatus.CONFLICT, 'Already requested');
       }
     }
@@ -54,53 +98,122 @@ export const request = async (requesterId: string, recipientId: string) => {
 };
 
 export const cancel = async (requesterId: string, recipientId: string) => {
-  const deleteQuery = await db.friendSchema.deleteOne({ requesterId, recipientId });
+  const deleteQuery = await db.friendSchema.deleteMany({
+    $or: [
+      {
+        requesterId,
+        recipientId,
+        status: 0,
+      },
+      {
+        requesterId: recipientId,
+        recipientId: requesterId,
+        status: 1,
+      },
+    ],
+  });
   if (deleteQuery.deletedCount === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Already cancelled');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Friend request not found');
   }
 };
 
-export const requestList = async (requesterId: string) => {
-  const requestListId = (await db.friendSchema.find({ requesterId, accepted: false })).map((value) => new mongoose.Types.ObjectId(value.recipientId));
-  if (requestListId.length === 0) return [];
-  const requestList = await db.userSchema.find({
-    _id: {
-      $in: requestListId,
+export const pending = async (requesterId: string) => {
+  const pendingList = await db.friendSchema.find({
+    $or: [
+      {
+        requesterId,
+      },
+    ],
+    status: {
+      $ne: 2,
     },
   });
-  return requestList.map((value) => ({ id: value._id.toString(), username: value.username }));
+  if (pendingList.length === 0) return [];
+  const pendingListId = pendingList.map((value) => new mongoose.Types.ObjectId(value.recipientId));
+  const userList = await db.userSchema.find({
+    _id: {
+      $in: pendingListId,
+    },
+  });
+  return pendingList
+    .map((value) => {
+      const user = userList.find((user) => user._id.toString() === value.recipientId);
+      return {
+        id: value.recipientId,
+        username: user?.username ?? 'unknown-user',
+        status: value.status,
+      };
+    })
+    .sort((a, b) => b.status.valueOf() - a.status.valueOf());
 };
 
 export const accept = async (requesterId: string, recipientId: string) => {
-  const updateQuery = await db.friendSchema.updateOne({ requesterId: requesterId, recipientId: recipientId }, { accepted: true });
+  const updateQuery = await db.friendSchema.updateOne(
+    {
+      requesterId,
+      recipientId,
+      status: 0,
+    },
+    { status: 2 },
+  );
   if (updateQuery.matchedCount === 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Friend request not found');
   } else if (updateQuery.matchedCount > 0 && updateQuery.modifiedCount === 0) {
     throw new ApiError(httpStatus.CONFLICT, 'Already accepted');
   }
+  await db.friendSchema.updateOne(
+    {
+      requesterId: recipientId,
+      recipientId: requesterId,
+      $or: [
+        {
+          status: 0,
+        },
+        {
+          status: 1,
+        },
+      ],
+    },
+    { status: 2 },
+  );
 };
 
 export const reject = async (requesterId: string, recipientId: string) => {
-  const deleteQuery = await db.friendSchema.deleteOne({ requesterId, recipientId });
-  if (deleteQuery.deletedCount === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Already rejected');
-  }
-};
-
-export const remove = async (userId: string, friendId: string) => {
-  const deleteQuery = await db.friendSchema.deleteOne({
+  const deleteQuery = await db.friendSchema.deleteMany({
     $or: [
       {
-        requesterId: userId,
-        recipientId: friendId,
+        requesterId,
+        recipientId,
+        status: 0,
       },
       {
-        requesterId: friendId,
-        recipientId: userId,
+        requesterId: recipientId,
+        recipientId: requesterId,
+        status: 1,
       },
     ],
   });
   if (deleteQuery.deletedCount === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Already removed');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Friend request not found');
+  }
+};
+
+export const remove = async (userId: string, friendId: string) => {
+  const deleteQuery = await db.friendSchema.deleteMany({
+    $or: [
+      {
+        requesterId: userId,
+        recipientId: friendId,
+        status: 2,
+      },
+      {
+        requesterId: friendId,
+        recipientId: userId,
+        status: 2,
+      },
+    ],
+  });
+  if (deleteQuery.deletedCount === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Friend not found');
   }
 };

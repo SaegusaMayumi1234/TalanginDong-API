@@ -36,8 +36,8 @@ export const cancel = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const requestList = catchAsync(async (req: Request, res: Response) => {
-  const data = await FriendService.requestList(res.locals.user._id.toString());
+export const pending = catchAsync(async (req: Request, res: Response) => {
+  const data = await FriendService.pending(res.locals.user._id.toString());
   res.status(httpStatus.OK).send({
     status: httpStatus.OK,
     data,
