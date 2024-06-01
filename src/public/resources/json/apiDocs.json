@@ -18,161 +18,23 @@
         {
             "name": "Authentication",
             "description": "Authentication endpoint for TalanginDong mobile application"
+        },
+        {
+            "name": "Friend",
+            "description": "Friend endpoint for TalanginDong mobile application"
         }
     ],
     "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "jwt"
+            }
+        },
         "responses": {
-            "DataMissing": {
-                "description": "Some data is missing, this is usually a field.",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "success": {
-                                    "type": "boolean",
-                                    "example": false
-                                },
-                                "cause": {
-                                    "type": "string",
-                                    "example": "Missing one or more fields [...]"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "InvalidKey": {
-                "description": "Access is forbidden, usually due to an invalid API key being used.",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "success": {
-                                    "type": "boolean",
-                                    "example": false
-                                },
-                                "cause": {
-                                    "type": "string",
-                                    "example": "Invalid API key"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "RateLimitedHypixel": {
-                "description": "A request limit has been reached, usually this is due to the limit on the key being reached but can also be triggered by a global throttle.",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "success": {
-                                    "type": "boolean",
-                                    "example": false
-                                },
-                                "cause": {
-                                    "type": "string",
-                                    "example": "Key throttle"
-                                },
-                                "throttle": {
-                                    "type": "boolean",
-                                    "example": true
-                                },
-                                "global": {
-                                    "type": "boolean",
-                                    "description": "When this boolean exists and is true, the throttle occurring is a global throttle applied to all users",
-                                    "example": true
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "InvalidPage": {
-                "description": "The page provided is invalid.",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "success": {
-                                    "type": "boolean",
-                                    "example": false
-                                },
-                                "cause": {
-                                    "type": "string",
-                                    "example": "Invalid page"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "MissingPage": {
-                "description": "The page provided does not exist.",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "success": {
-                                    "type": "boolean",
-                                    "example": false
-                                },
-                                "cause": {
-                                    "type": "string",
-                                    "example": "Page not found"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "MalformedData": {
-                "description": "Some data provided is invalid.",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "success": {
-                                    "type": "boolean",
-                                    "example": false
-                                },
-                                "cause": {
-                                    "type": "string",
-                                    "example": "Malformed UUID"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "NotPopulated": {
-                "description": "The data is not yet populated and should be available shortly",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "success": {
-                                    "type": "boolean",
-                                    "example": false
-                                },
-                                "cause": {
-                                    "type": "string",
-                                    "example": "Leaderboard data has not yet been populated"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "RateLimited": {
-                "description": "A request limit has been reached, usually this is due to the limit being reached but can also be triggered by a global throttle.",
+            "SuccessNoData": {
+                "description": "A successful response",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -180,20 +42,54 @@
                             "properties": {
                                 "status": {
                                     "type": "integer",
-                                    "example": 429
-                                },
-                                "reason": {
-                                    "type": "string",
-                                    "example": "You get rate limited"
+                                    "example": 200
+                                }
+                            }
+                        }
+                    }
+                }
+
+            },
+            "BadRequest": {
+                "description": "Bad request because of missing required data or other thing",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "example": 400
                                 },
                                 "code": {
                                     "type": "string",
-                                    "example": "RATE_LIMITED"
+                                    "example": "BAD_REQUEST"
                                 },
-                                "global": {
-                                    "type": "boolean",
-                                    "description": "When this boolean exists and is true, the throttle occurring is a global throttle applied to all users",
-                                    "example": true
+                                "reason": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "NotAuthorized": {
+                "description": "Invalid authorization token",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "example": 401
+                                },
+                                "code": {
+                                    "type": "string",
+                                    "example": "UNAUTHORIZED"
+                                },
+                                "reason": {
+                                    "type": "string"
                                 }
                             }
                         }
@@ -201,7 +97,7 @@
                 }
             },
             "NotFound": {
-                "description": "The requested data was not found.",
+                "description": "The requested data was not found",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -211,13 +107,62 @@
                                     "type": "integer",
                                     "example": 404
                                 },
-                                "reason": {
-                                    "type": "string",
-                                    "example": "Data not found"
-                                },
                                 "code": {
                                     "type": "string",
                                     "example": "NOT_FOUND"
+                                },
+                                "reason": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "Conflict": {
+                "description": "Conflict when inserting data",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "example": 409
+                                },
+                                "code": {
+                                    "type": "string",
+                                    "example": "CONFLICT"
+                                },
+                                "reason": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "InternalServerError": {
+                "description": "An unknown error that happened server side",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "example": 500
+                                },
+                                "code": {
+                                    "type": "string",
+                                    "example": "INTERNAL_SERVER_ERROR"
+                                },
+                                "reason": {
+                                    "type": "string"
+                                },
+                                "stack": {
+                                    "type": "string",
+                                    "nullable": true
                                 }
                             }
                         }
@@ -674,21 +619,24 @@
         }
     },
     "paths": {
-        "/v1/auth/signup": {
+        "/v1/auth/register": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "Signup endpoint.",
+                "summary": "Register",
+                "description": "Endpoint for registering new account.",
                 "operationId": "signup",
                 "requestBody": {
-                    "description": "email and password",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
                                     "email": {
                                         "type": "string"
                                     },
@@ -702,20 +650,16 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "A successful response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 200
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/SuccessNoData"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
                     }
                 }
             }
@@ -725,10 +669,10 @@
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "Login endpoint.",
+                "summary": "Login",
+                "description": "Endpoint for login account.",
                 "operationId": "login",
                 "requestBody": {
-                    "description": "email and password",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -762,12 +706,10 @@
                                             "type": "object",
                                             "properties": {
                                                 "token": {
-                                                    "type": "string",
-                                                    "example": "eyJhbGciOiJIUzI1BlIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1bGlhbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6Imp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MDkxMzE5ODksImV4cCI6MTcwOTEzNTU4OX0.ceguIFo5dvzp3kZyLSRlc1eYiASLg6WF3bILLoUvCwU"
+                                                    "type": "string"
                                                 },
                                                 "refreshToken": {
-                                                    "type": "string",
-                                                    "example": "eyJhbGciOiJIUzI1BlIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1bGlhbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6Imp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MDkxMzE5ODksImV4cCI6MTcwOTEzNTU4OX0.ceguIFo5dvzp3kZyLSRlc1eYiASLg6WF3bILLoUvCwU"
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -775,6 +717,15 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
                     }
                 }
             }
@@ -784,10 +735,10 @@
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "Refresh Token endpoint.",
+                "summary": "Refresh Token",
+                "description": "Endpoint for refreshing token.",
                 "operationId": "refreshToken",
                 "requestBody": {
-                    "description": "refresh token from login endpoint",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -818,8 +769,7 @@
                                             "type": "object",
                                             "properties": {
                                                 "token": {
-                                                    "type": "string",
-                                                    "example": "eyJhbGciOiJIUzI1BlIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1bGlhbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6Imp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MDkxMzE5ODksImV4cCI6MTcwOTEzNTU4OX0.ceguIFo5dvzp3kZyLSRlc1eYiASLg6WF3bILLoUvCwU"
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -827,6 +777,416 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/NotAuthorized"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/v1/friend/list": {
+            "get": {
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Friend List",
+                "description": "Endpoint for getting friend list.",
+                "operationId": "list",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "username": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/NotAuthorized"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/v1/friend/search": {
+            "get": {
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Search Friend",
+                "description": "Endpoint for searching friend.",
+                "operationId": "search",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "search",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "username": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/NotAuthorized"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/v1/friend/pending": {
+            "get": {
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Pending Friend Request",
+                "description": "Endpoint for getting list of pending friend request.",
+                "operationId": "pending",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "username": {
+                                                        "type": "string"
+                                                    },
+                                                    "status": {
+                                                        "type": "integer",
+                                                        "enum": [
+                                                            0,
+                                                            1
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/NotAuthorized"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/v1/friend/request": {
+            "post": {
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Request friend",
+                "description": "Endpoint for requesting friend.",
+                "operationId": "request",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "recipientId": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessNoData"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/NotAuthorized"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/v1/friend/accept": {
+            "put": {
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Accept Friend",
+                "description": "Endpoint for accepting friend.",
+                "operationId": "accept",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "requesterId": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessNoData"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/NotAuthorized"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/v1/friend/cancel": {
+            "delete": {
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Cancel Friend Request.",
+                "description": "Endpoint for cancelling friend request.",
+                "operationId": "cancel",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "recipientId": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessNoData"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/NotAuthorized"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/v1/friend/reject": {
+            "delete": {
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Reject Friend Request.",
+                "description": "Endpoint for rejecting friend request.",
+                "operationId": "reject",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "requesterId": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessNoData"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/NotAuthorized"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/v1/friend/remove": {
+            "delete": {
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Remove Friend",
+                "description": "Endpoint for removing friend.",
+                "operationId": "remove",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "friendId": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessNoData"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/NotAuthorized"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
                     }
                 }
             }
