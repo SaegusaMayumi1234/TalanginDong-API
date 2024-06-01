@@ -711,10 +711,6 @@
                                         "status": {
                                             "type": "integer",
                                             "example": 200
-                                        },
-                                        "code": {
-                                            "type": "string",
-                                            "example": "SUCCESS"
                                         }
                                     }
                                 }
@@ -762,28 +758,68 @@
                                             "type": "integer",
                                             "example": 200
                                         },
-                                        "code": {
-                                            "type": "string",
-                                            "example": "SUCCESS"
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "eyJhbGciOiJIUzI1BlIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1bGlhbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6Imp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MDkxMzE5ODksImV4cCI6MTcwOTEzNTU4OX0.ceguIFo5dvzp3kZyLSRlc1eYiASLg6WF3bILLoUvCwU"
+                                                },
+                                                "refreshToken": {
+                                                    "type": "string",
+                                                    "example": "eyJhbGciOiJIUzI1BlIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1bGlhbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6Imp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MDkxMzE5ODksImV4cCI6MTcwOTEzNTU4OX0.ceguIFo5dvzp3kZyLSRlc1eYiASLg6WF3bILLoUvCwU"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/refresh-token": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Refresh Token endpoint.",
+                "operationId": "refreshToken",
+                "requestBody": {
+                    "description": "refresh token from login endpoint",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "refreshToken": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "A successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "integer",
+                                            "example": 200
                                         },
                                         "data": {
                                             "type": "object",
                                             "properties": {
                                                 "token": {
                                                     "type": "string",
-                                                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1bGlhbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6Imp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MDkxMzE5ODksImV4cCI6MTcwOTEzNTU4OX0.ceguIFo5dvzp3kZyLSRlc1eYiASLg6WF3bILLoUvCwU"
-                                                },
-                                                "id": {
-                                                    "type": "string",
-                                                    "example": "65df48d0482d657b992a44ab"
-                                                },
-                                                "email": {
-                                                    "type": "string",
-                                                    "example": "talangin@gmail.com"
-                                                },
-                                                "username": {
-                                                    "type": "string",
-                                                    "example": "talangin"
+                                                    "example": "eyJhbGciOiJIUzI1BlIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1bGlhbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6Imp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MDkxMzE5ODksImV4cCI6MTcwOTEzNTU4OX0.ceguIFo5dvzp3kZyLSRlc1eYiASLg6WF3bILLoUvCwU"
                                                 }
                                             }
                                         }
