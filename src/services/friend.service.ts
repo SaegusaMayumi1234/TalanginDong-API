@@ -11,11 +11,13 @@ export const list = async (userId: string) => {
   if (friendListId.length === 0) {
     return [];
   }
-  const userList = await db.userSchema.find({
-    _id: {
-      $in: friendListId,
-    },
-  });
+  const userList = await db.userSchema
+    .find({
+      _id: {
+        $in: friendListId,
+      },
+    })
+    .sort({ username: 1 });
   return userList.map((value) => ({ id: value._id.toString(), username: value.username }));
 };
 
@@ -130,11 +132,13 @@ export const pending = async (requesterId: string) => {
   });
   if (pendingList.length === 0) return [];
   const pendingListId = pendingList.map((value) => new mongoose.Types.ObjectId(value.recipientId));
-  const userList = await db.userSchema.find({
-    _id: {
-      $in: pendingListId,
-    },
-  });
+  const userList = await db.userSchema
+    .find({
+      _id: {
+        $in: pendingListId,
+      },
+    })
+    .sort({ username: 1 });
   return pendingList
     .map((value) => {
       const user = userList.find((user) => user._id.toString() === value.recipientId);
@@ -144,7 +148,7 @@ export const pending = async (requesterId: string) => {
         status: value.status,
       };
     })
-    .sort((a, b) => b.status.valueOf() - a.status.valueOf());
+    .sort((a, b) => b.status.valueOf() - a.status.valueOf() || a.username.localeCompare(b.username));
 };
 
 export const accept = async (requesterId: string, recipientId: string) => {
