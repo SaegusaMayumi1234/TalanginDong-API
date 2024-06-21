@@ -1,7 +1,6 @@
 import { AnalyzeExpenseCommand } from '@aws-sdk/client-textract';
 import { TextractClient } from '@aws-sdk/client-textract';
 import { fromIni } from '@aws-sdk/credential-providers';
-import fs from 'fs';
 
 import config from '../config/config';
 import { currencyStringToNumber } from '../utils/stringModifier';
@@ -43,7 +42,7 @@ export const scan = async (bytes: string) => {
   };
   const aExpense = new AnalyzeExpenseCommand(params);
   const response = await textractClient.send(aExpense);
-  fs.writeFileSync('./test.json', JSON.stringify(response, null, 2));
+
   const expenseItems: IParsedItems[] = [];
   const expenseSummary: ISummary = {
     subtotal: {
