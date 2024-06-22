@@ -4,6 +4,7 @@ import AuthRoute from './auth.route';
 import TextractRoute from './textract.route';
 import FriendRoute from './friend.route';
 import ProfileRoute from './profile.route';
+import BillRoute from './bill.route';
 
 const router = Router();
 
@@ -23,6 +24,10 @@ const defaultRoutes = [
   {
     path: '/profile',
     route: ProfileRoute,
+  },
+  {
+    path: '/bill',
+    route: BillRoute,
   },
 ];
 

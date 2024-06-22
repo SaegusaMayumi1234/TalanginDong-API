@@ -3,10 +3,12 @@ import mongoose from 'mongoose';
 import * as logger from '../../utils/logger';
 import { userSchema } from './schemas/user';
 import { friendSchema } from './schemas/friend';
+import { billSchema } from './schemas/bill';
 
 export default {
   userSchema,
   friendSchema,
+  billSchema,
   mongoose,
 };
 
