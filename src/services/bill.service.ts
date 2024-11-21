@@ -10,8 +10,9 @@ export const getBill = async function getBill(userId: String) {
   const billData = (await db.billSchema.find()) as any;
   const proc = [];
   for (const bill of billData) {
+    proc.push(bill.data);
     if (bill.data.createdBy.id === userId || bill.data.members.some((value: any) => value.id === userId)) {
-      proc.push(bill.data);
+      console.log(bill.data);
     }
   }
   return proc;
