@@ -10,7 +10,7 @@ export const createBill = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getBill = catchAsync(async (req: Request, res: Response) => {
-  const data = await BillService.getBill();
+  const data = await BillService.getBill(res.locals.user._id.toString());
   res.status(httpStatus.OK).send({
     status: httpStatus.OK,
     data,
