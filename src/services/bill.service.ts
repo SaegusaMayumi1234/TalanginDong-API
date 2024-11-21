@@ -6,11 +6,13 @@ export const createBill = async function createBill(data: Object) {
   }).save();
 };
 
-export const getBill = async function getBill() {
-  const billData = await db.billSchema.find();
+export const getBill = async function getBill(userId: String) {
+  const billData = (await db.billSchema.find()) as any;
   const proc = [];
   for (const bill of billData) {
-    proc.push(bill.data);
+    if (bill.data.createdBy === userId || bill.data.members.some((value: any) => value.id === userId)) {
+      proc.push(bill.data);
+    }
   }
   return proc;
 };
